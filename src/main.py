@@ -1,6 +1,7 @@
 def main():
     import argparse
     import requests
+    import json
     from config.settings import API_KEY
 
     # Define the correct API endpoint
@@ -27,9 +28,17 @@ def main():
 
     # Check for a successful response
     if response.status_code == 200:
-        # Parse and print the response
+        # Parse the response
         response_json = response.json()
-        print(response_json)
+        answer = response_json['candidates'][0]['content']['parts'][0]['text']
+        total_token_count = response_json['usageMetadata']['totalTokenCount']
+
+        # Print the answer
+        print(f"Answer: {answer.strip()}")
+
+        # Save the total token count to a local file
+        with open("token_usage.txt", "a") as file:
+            file.write(f"Total Token Count: {total_token_count}\n")
     else:
         print(f"Error: {response.status_code} - {response.text}")
 
