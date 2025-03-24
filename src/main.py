@@ -1,25 +1,35 @@
 def main():
     import argparse
     import requests
-    from config.settings import API_KEY, BASE_URL
-    from utils.helpers import format_request, parse_response
+    from config.settings import API_KEY
+
+    # Define the correct API endpoint
+    BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
     # Set up command-line argument parsing
     parser = argparse.ArgumentParser(description='Gemini CLI for interacting with the Gemini API.')
-    parser.add_argument('prompt', type=str, help='The prompt to send to the Gemini API for content generation.')
+    parser.add_argument('--input', '-i', type=str, required=True, help='The input prompt to send to the Gemini API for content generation.')
     args = parser.parse_args()
 
-    # Prepare the API request
-    request_data = format_request(args.prompt)
+    # Prepare the API request payload
+    request_data = {
+        "contents": [{
+            "parts": [{"text": args.input}]
+        }]
+    }
 
     # Make the API request
-    response = requests.post(BASE_URL, json=request_data, headers={'Authorization': f'Bearer {API_KEY}'})
+    response = requests.post(
+        f"{BASE_URL}?key={API_KEY}",
+        json=request_data,
+        headers={'Content-Type': 'application/json'}
+    )
 
     # Check for a successful response
     if response.status_code == 200:
         # Parse and print the response
-        output = parse_response(response.json())
-        print(output)
+        response_json = response.json()
+        print(response_json)
     else:
         print(f"Error: {response.status_code} - {response.text}")
 
