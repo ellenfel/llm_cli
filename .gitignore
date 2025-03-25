@@ -18,4 +18,7 @@ Thumbs.db
 # Ignore API key backups or sensitive files
 src/config/settings.py.bak
 
+
+# Ignore environment variables and sensitive files
 src/config/settings.py
+
