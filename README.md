@@ -121,4 +121,110 @@ The CLI maintains a history of interactions, including:
 - ✅ Enhanced Error Handling
 - 🚧 Retry Mechanism (max_retries=3)
 
+
+
+## AI Memory & Persona Roadmap
+
+### 1. Persistent Conversation Storage 🔄
+- Implement PostgreSQL database to store conversations
+  ```sql
+  -- Create extensions for vector search capabilities
+  CREATE EXTENSION IF NOT EXISTS vector;
+
+  -- Create enum for persona types
+  CREATE TYPE persona_type AS ENUM ('gym_coach', 'teacher', 'programmer', 'default');
+
+  -- Create conversations table
+  CREATE TABLE conversations (
+      id SERIAL PRIMARY KEY,
+      timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+      user_input TEXT NOT NULL,
+      ai_response TEXT NOT NULL,
+      active_persona persona_type DEFAULT 'default',
+      context_tags TEXT[],
+      embedding vector(1536),  -- For semantic search
+      metadata JSONB
+  );
+
+  -- Create index for efficient context search
+  CREATE INDEX idx_conversations_timestamp ON conversations(timestamp);
+  CREATE INDEX idx_conversations_persona ON conversations(active_persona);
+  CREATE INDEX idx_conversations_embedding ON conversations USING ivfflat (embedding vector_cosine_ops);
+  ```
+
+- Required PostgreSQL setup:
+  ```bash
+  sudo apt install postgresql postgresql-contrib
+  sudo systemctl start postgresql
+  sudo -u postgres createdb gemini_cli
+  ```
+
+- Dependencies to add in requirements.txt:
+  ```
+  psycopg2-binary>=2.9.9
+  sqlalchemy>=2.0.0
+  alembic>=1.12.0
+  ```
+
+- **Status:** ❌ Not Started
+
+### 2. Persona Management System 🎭
+- Create persona configuration system
+- Add persona commands:
+  ```bash
+  python src/main.py --set-persona "gym_coach"
+  python src/main.py --list-personas
+  ```
+- **Status:** ❌ Not Started
+
+### 3. Context Window Management 🪟
+- Implement sliding context window
+- Add context pruning strategies
+- **Status:** ❌ Not Started
+
+### 4. Memory Types Implementation 🧠
+- Short-term memory (current session)
+- Long-term memory (persistent storage)
+- Working memory (active context)
+- **Status:** ❌ Not Started
+
+### 5. Memory Search & Retrieval 🔍
+- Implement vector embeddings
+- Add memory commands:
+  ```bash
+  python src/main.py --search "previous workouts"
+  python src/main.py --context-depth deep
+  ```
+- **Status:** ❌ Not Started
+
+### 6. Conversation Threading 🧵
+- Add thread management:
+  ```bash
+  python src/main.py --new-thread "workout_plan"
+  python src/main.py --switch-thread "diet_advice"
+  ```
+- **Status:** ❌ Not Started
+
+### 7. Memory Consolidation 📝
+- Periodic memory summarization
+- Knowledge base updates
+- **Status:** ❌ Not Started
+
+### 8. User Preference Learning 👤
+- Track user interactions
+- Adapt persona behavior
+- **Status:** ❌ Not Started
+
+### 9. API Integration 🔌
+- Enhance GeminiAgent class
+- Add memory management methods
+- **Status:** ❌ Not Started
+
+### 10. Performance Optimization ⚡
+- Implement caching
+- Optimize database queries
+- **Status:** ❌ Not Started
+
+---
+
 ---
