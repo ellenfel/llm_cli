@@ -2,6 +2,8 @@ import argparse
 import requests
 import json
 from config.settings import API_KEY
+from utils.agent import GeminiAgent
+
 
 BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
@@ -31,26 +33,29 @@ def log_token_usage(token_count, file_path="token_usage.txt"):
 def main():
     # Set up command-line argument parsing
     parser = argparse.ArgumentParser(description='Gemini CLI for interacting with the Gemini API.')
-    parser.add_argument('--input', '-i', type=str, required=True, help='The input prompt to send to the Gemini API for content generation.')
+    parser.add_argument('--input', '-i', type=str, required=True, 
+                       help='The input prompt to send to the Gemini API for content generation.')
+    parser.add_argument('--context', '-c', type=str,
+                       help='Optional context for the prompt')
+    parser.add_argument('--summarize', '-s', action='store_true',
+                       help='Summarize the input text')
     args = parser.parse_args()
 
-    # Make the API request
-    response = send_request(args.input)
+    # Initialize the GeminiAgent
+    agent = GeminiAgent()
 
-    # Check for a successful response
-    if response.status_code == 200:
-        # Parse the response
-        response_json = response.json()
-        answer = response_json['candidates'][0]['content']['parts'][0]['text']
-        total_token_count = response_json['usageMetadata']['totalTokenCount']
+    try:
+        if args.summarize:
+            response = agent.summarize(args.input)
+        else:
+            response = agent.generate_response(args.input, args.context)
 
-        # Print the answer
-        print(f"Answer: {answer.strip()}")
-
-        # Log the token usage
-        log_token_usage(total_token_count)
-    else:
-        print(f"Error: {response.status_code} - {response.text}")
+        if response:
+            print(f"Response: {response}")
+            history = agent.get_conversation_history()
+            print(f"\nConversation history: {len(history)} interactions")
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 if __name__ == "__main__":
     main()
