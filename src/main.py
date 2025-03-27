@@ -52,6 +52,12 @@ def main():
             print(f"Response: {response}")
             history = agent.get_conversation_history()
             print(f"\nConversation history: {len(history)} interactions")
+            
+            # Get token count from the last API response
+            if hasattr(agent, 'last_response') and agent.last_response:
+                token_count = agent.last_response['usageMetadata']['totalTokenCount']
+                log_token_usage(token_count)
+                print(f"Tokens used in this interaction: {token_count}")
     except Exception as e:
         print(f"Error: {str(e)}")
 

@@ -25,8 +25,8 @@ class GeminiAgent:
         )
 
         if response.status_code == 200:
-            result = response.json()
-            answer = result['candidates'][0]['content']['parts'][0]['text']
+            self.last_response = response.json()  # Store the full response
+            answer = self.last_response['candidates'][0]['content']['parts'][0]['text']
             self._update_history(prompt, answer)
             return answer
         else:
