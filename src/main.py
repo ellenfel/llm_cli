@@ -3,9 +3,7 @@ import requests
 import json
 from config.settings import API_KEY
 from utils.agent import GeminiAgent
-
-
-BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+from config.settings import BASE_URL
 
 def send_request(prompt):
     """
