@@ -3,6 +3,42 @@
 ## Description
 Gemini CLI LLM is a command-line interface for interacting with the Gemini API to generate content using a local large language model (LLM). This project provides a simple way to leverage the capabilities of the Gemini API directly from your terminal.
 
+## Project Summary
+
+### Core Components
+- **Main Application** (`src/main.py`): CLI interface with command support for input, context, and summarization
+- **AI Agent** (`src/utils/agent.py`): Implements GeminiAgent class with response generation, context awareness, and history tracking
+- **Configuration** (`src/config/settings.py`): Manages API keys and base settings
+- **Helper Functions** (`src/utils/helpers.py`): Handles request formatting, response parsing, and error management
+
+### Current Features
+✅ Implemented:
+- Basic API integration
+- Context-aware prompting
+- Conversation history
+- Text summarization
+- Token usage tracking
+- Unit testing foundation
+
+### Technical Stack
+- Python's `requests` library for API calls
+- Type hints for code quality
+- In-memory conversation history
+- Token usage logging
+- Unit tests with `unittest`
+
+### Usage Examples
+```bash
+# Basic usage
+python src/main.py --input "What is machine learning?"
+
+# With context
+python src/main.py --input "What are vectors?" --context "Machine learning concepts"
+
+# Text summarization
+python src/main.py --input "Long text here" --summarize
+```
+
 ## Installation Instructions
 1. Clone the repository:
    ```
@@ -20,18 +56,13 @@ Gemini CLI LLM is a command-line interface for interacting with the Gemini API t
    ```
 4. Replace the placeholder API key in `src/config/settings.py` with your actual Gemini API key.
 
-## Usage
-To use the CLI, run the following command in your terminal:
-```
-python src/main.py --input "Your input text here"
-```
-Make sure to replace `"Your input text here"` with the text you want to process. The API key must be set in `settings.py` for the CLI to function correctly.
 
 ## Project Structure
 - `src/main.py`: The entry point of the CLI application. It handles command-line arguments, sets up the API request to the Gemini API, and processes the response.
 - `src/utils/helpers.py`: Contains utility functions that assist with tasks such as formatting the API request and parsing the response from the Gemini API.
 - `src/utils/agent.py`: Implements the GeminiAgent class that handles advanced features like context-aware prompting, conversation history, and text summarization.
 - `src/config/settings.py`: Stores configuration settings, including the API key and any other necessary parameters for connecting to the Gemini API.
+- `tests/`: Contains test scripts to validate the functionality of the application, including unit tests for utility functions and integration tests for the main application.
 - `.gitignore`: Specifies files and directories that should be ignored by Git, such as sensitive information like API keys and virtual environment folders.
 - `requirements.txt`: Lists the Python dependencies required for the project, including libraries for making HTTP requests and handling JSON data.
 - `README.md`: Comprehensive documentation for the project, explaining its purpose, setup, usage instructions, and next steps for further development.
