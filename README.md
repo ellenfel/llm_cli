@@ -30,16 +30,37 @@ Make sure to replace `"Your input text here"` with the text you want to process.
 ## Project Structure
 - `src/main.py`: The entry point of the CLI application. It handles command-line arguments, sets up the API request to the Gemini API, and processes the response.
 - `src/utils/helpers.py`: Contains utility functions that assist with tasks such as formatting the API request and parsing the response from the Gemini API.
+- `src/utils/agent.py`: Implements the GeminiAgent class that handles advanced features like context-aware prompting, conversation history, and text summarization.
 - `src/config/settings.py`: Stores configuration settings, including the API key and any other necessary parameters for connecting to the Gemini API.
 - `.gitignore`: Specifies files and directories that should be ignored by Git, such as sensitive information like API keys and virtual environment folders.
 - `requirements.txt`: Lists the Python dependencies required for the project, including libraries for making HTTP requests and handling JSON data.
 - `README.md`: Comprehensive documentation for the project, explaining its purpose, setup, usage instructions, and next steps for further development.
 
+## Advanced Features
+
+### Context-Aware Prompting
+The CLI now supports context-aware prompting to get more precise responses:
+```bash
+python src/main.py --input "What are vectors?" --context "Machine learning concepts"
+```
+
+### Text Summarization
+Summarize long texts using the summarization feature:
+```bash
+python src/main.py --input "Your long text here" --summarize
+```
+
+### Conversation History
+The CLI maintains a history of interactions, including:
+- Prompts
+- Responses
+- Timestamps
+
 ## Roadmap
 
 1. **Add Unit Tests**
    - Write unit tests for utility functions and the main logic using `pytest` or `unittest`.
-   - **Status:** ❌ Not Started
+   - **Status:** 🚧 Under Development
 
 2. **Improve Error Handling**
    - Add robust error handling for API timeouts, invalid API keys, and malformed responses.
@@ -92,5 +113,12 @@ Make sure to replace `"Your input text here"` with the text you want to process.
 14. **Publish to GitHub**
     - Publish the project to GitHub, add a license, and encourage contributions from the open-source community.
    - **Status:** ❌ Not Started
+
+## New Features Status
+- ✅ Context-Aware Prompting
+- ✅ Conversation History
+- ✅ Text Summarization
+- ✅ Enhanced Error Handling
+- 🚧 Retry Mechanism (max_retries=3)
 
 ---
