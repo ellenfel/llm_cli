@@ -1,6 +1,12 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
+import sys
+import os
 from requests.exceptions import Timeout
+
+# Add the src directory to Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from src.utils.agent import GeminiAgent
 from src.utils.exceptions import (
     APITimeoutError,
@@ -30,3 +36,6 @@ class TestGeminiAgent(unittest.TestCase):
         mock_post.return_value.json.return_value = {"invalid": "response"}
         with self.assertRaises(MalformedResponseError):
             self.agent.generate_response("test prompt")
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,9 +1,12 @@
 import requests
-import json
+from requests.exceptions import Timeout, RequestException
 from typing import Dict, List, Optional
-from config.settings import API_KEY, BASE_URL
+from src.config.settings import API_KEY, BASE_URL, TIMEOUT
 from utils.helpers import format_request, parse_response, handle_api_error  # Fixed import names
+from utils.exceptions import APITimeoutError, InvalidAPIKeyError, MalformedResponseError
 import datetime as import_datetime
+from exceptions import GeminiAPIError
+import json
 
 class GeminiAgent:
     def __init__(self):
@@ -14,24 +17,36 @@ class GeminiAgent:
 
     def generate_response(self, prompt: str, context: Optional[str] = None) -> Optional[str]:
         """Generate a response from the Gemini API based on the given prompt."""
-        # Build context-aware prompt
         full_prompt = self._build_prompt(prompt, context)
         
-        # Use existing send_request function
-        response = requests.post(
-            f"{self.base_url}?key={self.api_key}",
-            json={"contents": [{"parts": [{"text": full_prompt}]}]},
-            headers={'Content-Type': 'application/json'}
-        )
+        try:
+            response = requests.post(
+                f"{self.base_url}?key={self.api_key}",
+                json={"contents": [{"parts": [{"text": full_prompt}]}]},
+                headers={'Content-Type': 'application/json'},
+                timeout=TIMEOUT
+            )
 
-        if response.status_code == 200:
-            self.last_response = response.json()  # Store the full response
-            answer = self.last_response['candidates'][0]['content']['parts'][0]['text']
-            self._update_history(prompt, answer)
-            return answer
-        else:
-            handle_api_error(response)
-            return None
+            # Check for specific error status codes
+            if response.status_code == 401:
+                raise InvalidAPIKeyError("Invalid API key. Please check your configuration.")
+            elif response.status_code == 400:
+                raise MalformedResponseError(f"Bad request: {response.json().get('error', {}).get('message', 'Unknown error')}")
+            elif response.status_code != 200:
+                raise GeminiAPIError(f"API request failed with status code: {response.status_code}")
+
+            try:
+                self.last_response = response.json()
+                answer = self.last_response['candidates'][0]['content']['parts'][0]['text']
+                self._update_history(prompt, answer)
+                return answer
+            except (KeyError, IndexError, json.JSONDecodeError) as e:
+                raise MalformedResponseError(f"Failed to parse API response: {str(e)}")
+
+        except Timeout:
+            raise APITimeoutError(f"API request timed out after {TIMEOUT} seconds")
+        except RequestException as e:
+            raise GeminiAPIError(f"Request failed: {str(e)}")
 
     def _build_prompt(self, prompt: str, context: Optional[str] = None) -> str:
         """Build a context-aware prompt."""

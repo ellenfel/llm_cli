@@ -1,9 +1,16 @@
 import argparse
 import requests
 import json
+import sys
 from config.settings import API_KEY
 from utils.agent import GeminiAgent
 from config.settings import BASE_URL
+from utils.exceptions import (
+    GeminiAPIError,
+    APITimeoutError,
+    InvalidAPIKeyError,
+    MalformedResponseError
+)
 
 def send_request(prompt):
     """
@@ -58,8 +65,22 @@ def main():
                 token_count = agent.last_response['usageMetadata']['totalTokenCount']
                 log_token_usage(token_count)
                 print(f"Tokens used in this interaction: {token_count}")
+
+    except APITimeoutError:
+        print("Error: The API request timed out. Please try again later.", file=sys.stderr)
+        sys.exit(1)
+    except InvalidAPIKeyError:
+        print("Error: Invalid API key. Please check your configuration.", file=sys.stderr)
+        sys.exit(1)
+    except MalformedResponseError as e:
+        print(f"Error: Received malformed response from API: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+    except GeminiAPIError as e:
+        print(f"Error: API request failed: {str(e)}", file=sys.stderr)
+        sys.exit(1)
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"Error: An unexpected error occurred: {str(e)}", file=sys.stderr)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
